@@ -123,3 +123,31 @@ function save_jk_event_meta($post_id){
     update_post_meta($post_id,'jk_custom_data',sanitize_text_field($_POST['jk_data']));
 
 }
+
+
+
+
+function example_add_dashboard_widgets() {
+
+	wp_add_dashboard_widget(
+			'example_dashboard_widget',         // Widget slug.
+			'Example Dashboard Widget',         // Title.
+			'example_dashboard_widget_function' // Display function.
+	);
+}
+add_action( 'wp_dashboard_setup', 'example_add_dashboard_widgets' );
+
+/**
+ * Create the function to output the contents of our Dashboard Widget.
+ */
+function example_dashboard_widget_function() {
+
+	$w = new WP_Query([
+			'post_type' => 'note',
+			'posts_per_page'    => -1
+	]);
+
+	while ($w->have_posts()) : $w->the_post() ;?>
+      <h2><?php the_title() ?></h2>
+	<?php endwhile;
+}

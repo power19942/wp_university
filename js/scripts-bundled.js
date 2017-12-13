@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -10494,6 +10494,84 @@ exports.default = HeroSlider;
 
 
 Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _jquery = __webpack_require__(0);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Like = function () {
+    function Like() {
+        _classCallCheck(this, Like);
+
+        this.events();
+    }
+
+    _createClass(Like, [{
+        key: 'events',
+        value: function events() {
+            (0, _jquery2.default)('.like-box').on('click', this.clickDispatcher.bind(this));
+        }
+    }, {
+        key: 'clickDispatcher',
+        value: function clickDispatcher(e) {
+            var likeBox = (0, _jquery2.default)(e.target).closest(".like-box");
+            if (likeBox.data('exists') == 'yes') {
+                this.deleteLike();
+            } else {
+                this.createLike();
+            }
+        }
+    }, {
+        key: 'createLike',
+        value: function createLike() {
+            _jquery2.default.ajax({
+                url: universityData.root_url + '/wp-json/university/v1/manageLike',
+                type: 'POST',
+                success: function success(response) {
+                    console.log(response);
+                },
+                error: function error(err) {
+                    console.log(err);
+                }
+            });
+        }
+    }, {
+        key: 'deleteLike',
+        value: function deleteLike() {
+            _jquery2.default.ajax({
+                url: universityData.root_url + '/wp-json/university/v1/manageLike',
+                type: 'DELETE',
+                success: function success(response) {
+                    console.log(response);
+                },
+                error: function error(err) {
+                    console.log(err);
+                }
+            });
+        }
+    }]);
+
+    return Like;
+}();
+
+exports.default = Like;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
@@ -10535,7 +10613,156 @@ var MobileMenu = function () {
 exports.default = MobileMenu;
 
 /***/ }),
-/* 4 */
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _jquery = __webpack_require__(0);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MyNotes = function () {
+    function MyNotes() {
+        _classCallCheck(this, MyNotes);
+
+        this.events();
+    }
+
+    _createClass(MyNotes, [{
+        key: 'events',
+        value: function events() {
+            (0, _jquery2.default)('#my-notes').on('click', '.delete-note', this.deleteNote.bind(this));
+            (0, _jquery2.default)('#my-notes').on('click', '.edit-note', this.editNote.bind(this));
+            (0, _jquery2.default)('#my-notes').on('click', '.update-note', this.updateNote.bind(this));
+            (0, _jquery2.default)(".submit-note").on("click", this.createNote.bind(this));
+        }
+    }, {
+        key: 'createNote',
+        value: function createNote(e) {
+            var ourNewPost = {
+                'title': (0, _jquery2.default)(".new-note-title").val(),
+                'content': (0, _jquery2.default)(".new-note-body").val(),
+                'status': 'publish'
+            };
+
+            _jquery2.default.ajax({
+                beforeSend: function beforeSend(xhr) {
+                    xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
+                },
+                url: universityData.root_url + '/wp-json/wp/v2/note/',
+                type: 'POST',
+                data: ourNewPost,
+                success: function success(response) {
+                    (0, _jquery2.default)(".new-note-title, .new-note-body").val('');
+                    (0, _jquery2.default)('\n          <li data-id="' + response.id + '">\n            <input readonly class="note-title-field" value="' + response.title.raw + '">\n            <span class="edit-note"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>\n            <span class="delete-note"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</span>\n            <textarea readonly class="note-body-field">' + response.content.raw + '</textarea>\n            <span class="update-note btn btn--blue btn--small"><i class="fa fa-arrow-right" aria-hidden="true"></i> Save</span>\n          </li>\n          ').prependTo("#my-notes").hide().slideDown();
+
+                    console.log("Congrats");
+                    console.log(response);
+                },
+                error: function error(response) {
+                    if (response.responseText == 'You Have Reached Your Note Limit') {
+                        (0, _jquery2.default)('.note-limit-message').addClass('active');
+                    }
+                    console.log("Sorry");
+                    console.log(response);
+                }
+            });
+        }
+    }, {
+        key: 'updateNote',
+        value: function updateNote(e) {
+            var _this = this;
+
+            var thisNote = (0, _jquery2.default)(e.target).parents("li");
+
+            var ourUpdatedPost = {
+                'title': thisNote.find(".note-title-field").val(),
+                'content': thisNote.find(".note-body-field").val()
+            };
+
+            _jquery2.default.ajax({
+                beforeSend: function beforeSend(xhr) {
+                    xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
+                },
+                url: universityData.root_url + '/wp-json/wp/v2/note/' + thisNote.data('id'),
+                type: 'POST',
+                data: ourUpdatedPost,
+                success: function success(response) {
+                    _this.makeNoteReadOnly(thisNote);
+                    console.log("Congrats");
+                    console.log(response);
+                },
+                error: function error(response) {
+                    console.log("Sorry");
+                    console.log(response);
+                }
+            });
+        }
+    }, {
+        key: 'editNote',
+        value: function editNote(e) {
+            var note = (0, _jquery2.default)(e.target).parents('li');
+            if (note.data('state') == 'editable') this.makeNoteReadOnly(note);else this.makeNoteEditable(note);
+        }
+    }, {
+        key: 'makeNoteEditable',
+        value: function makeNoteEditable(note) {
+            note.find('.edit-note').html('\n            <i class="fa fa-times" aria-hidden="true"></i> Cansle\n        ');
+            note.find('.note-title-field, .note-body-field').removeAttr('readonly').addClass('note-active-field');
+            note.find('.update-note').addClass('update-note--visible');
+            note.data('state', 'editable');
+        }
+    }, {
+        key: 'makeNoteReadOnly',
+        value: function makeNoteReadOnly(note) {
+            note.find('.edit-note').html('\n            <i class="fa fa-pencil" aria-hidden="true"></i> Edit\n        ');
+            note.find('.note-title-field, .note-body-field').attr('readonly', 'readonly').removeClass('note-active-field');
+            note.find('.update-note').removeClass('update-note--visible');
+            note.data('state', 'cancel');
+        }
+    }, {
+        key: 'deleteNote',
+        value: function deleteNote(e) {
+            var note = (0, _jquery2.default)(e.target).parents('li');
+            _jquery2.default.ajax({
+                beforeSend: function beforeSend(xhr) {
+                    xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
+                },
+                url: universityData.root_url + '/wp-json/wp/v2/note/' + note.data('id'),
+                type: 'DELETE',
+                success: function success(data) {
+                    note.slideUp();
+                    if (data.userNoteCount < 5) {
+                        (0, _jquery2.default)('.note-limit-message').removeClass('active');
+                    }
+                },
+                error: function error(e) {
+                    alert('error');
+                    console.log(e);
+                }
+            });
+        }
+    }]);
+
+    return MyNotes;
+}();
+
+exports.default = MyNotes;
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10662,7 +10889,7 @@ var Search = function () {
 exports.default = Search;
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -13563,7 +13790,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13573,11 +13800,11 @@ var _jquery = __webpack_require__(0);
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-var _slickCarousel = __webpack_require__(5);
+var _slickCarousel = __webpack_require__(7);
 
 var _slickCarousel2 = _interopRequireDefault(_slickCarousel);
 
-var _MobileMenu = __webpack_require__(3);
+var _MobileMenu = __webpack_require__(4);
 
 var _MobileMenu2 = _interopRequireDefault(_MobileMenu);
 
@@ -13589,9 +13816,17 @@ var _GoogleMap = __webpack_require__(1);
 
 var _GoogleMap2 = _interopRequireDefault(_GoogleMap);
 
-var _Search = __webpack_require__(4);
+var _Search = __webpack_require__(6);
 
 var _Search2 = _interopRequireDefault(_Search);
+
+var _MyNotes = __webpack_require__(5);
+
+var _MyNotes2 = _interopRequireDefault(_MyNotes);
+
+var _Like = __webpack_require__(3);
+
+var _Like2 = _interopRequireDefault(_Like);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -13603,7 +13838,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var mobileMenu = new _MobileMenu2.default();
 var heroSlider = new _HeroSlider2.default();
 var googleMap = new _GoogleMap2.default();
-var liveSearch = new _Search2.default();
+var search = new _Search2.default();
+var myNotes = new _MyNotes2.default();
+var like = new _Like2.default();
 
 /***/ })
 /******/ ]);
